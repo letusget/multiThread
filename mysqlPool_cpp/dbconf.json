@@ -1,0 +1,14 @@
+{
+    "?ip":"数据库连接信息",
+    "ip":"192.168.18.135",
+    "port":3306,
+    "username":"root",
+    "password":"159612",
+    "?dbName":"连接的数据库",
+    "dbName":"book",
+    "minSize":"100",
+    "maxSize":"1024",
+    "?maxIdleTime":"单位均是毫秒",
+    "maxIdleTime":"5000",
+    "timeout":"1000"
+}
