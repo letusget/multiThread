@@ -8,7 +8,7 @@ using namespace Json;
 ConnectionPool::ConnectionPool()
 {
     //加载配置文件
-    if(!parseJosnFile())
+    if(!parseJsonFile())
     {
         return ;
     }
@@ -40,11 +40,11 @@ void ConnectionPool::addConnection()
 {
     MysqlConn* conn=new MysqlConn;
     conn->connect(m_user,m_passwd,m_dbName,m_ip,m_port);
+    //记录时间戳
+    conn->refreshAliveTime();
     //放入连接队列
     m_connectionQ.push(conn);
 
-    //记录时间戳
-    conn->refreshAliveTime();
 }
 
 
@@ -78,7 +78,7 @@ void ConnectionPool::recycleConnection()
     {
         //定时执行，使用线程休眠
         //this_thread::sleep_for(chrono::seconds(1)); //休眠1S
-        this_thread::sleep_for(chrono::milliseconds(1));
+        this_thread::sleep_for(chrono::milliseconds(500));
 
         //自动管理 连接队列
         lock_guard<mutex> locker(m_mutexQ);
@@ -111,7 +111,7 @@ ConnectionPool* ConnectionPool::getConnectPool()
     return &pool;
 }
 
-bool ConnectionPool::parseJosnFile()
+bool ConnectionPool::parseJsonFile()
 {
     //读入文件
     ifstream ifs("dbconf.json");

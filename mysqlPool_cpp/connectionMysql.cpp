@@ -20,14 +20,16 @@ MysqlConn::MysqlConn()
 bool MysqlConn::connect(string user,string passwd,string dbName,string ip,unsigned short port)   //指定默认端口号
 {
     //连接数据库
-    cout<<"\n";
-    cout<<"数据库连接信息如下: \n";
-    cout<<ip.c_str()<<"\n";
-    cout<<user.c_str()<<"\n";
-    cout<<passwd.c_str()<<"\n";
-    cout<<dbName.c_str()<<"\n";
-    cout<<port<<"\n";
-    cout<<"\n";
+    // cout<<"\n";
+    // cout<<"数据库连接信息如下: \n";
+    // cout<<ip.c_str()<<"\n";
+    // cout<<user.c_str()<<"\n";
+    // cout<<passwd.c_str()<<"\n";
+    // cout<<dbName.c_str()<<"\n";
+    // cout<<port<<"\n";
+    // cout<<"\n";
+
+
     MYSQL* ptr = mysql_real_connect(m_conn,ip.c_str(),user.c_str(), passwd.c_str(), dbName.c_str(),port,nullptr,0);
    // cout<<"6 "<<ptr<<"\n";
     //判断连接结果

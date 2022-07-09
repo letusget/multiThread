@@ -37,7 +37,7 @@ private:
     condition_variable m_cond;
 
     //解析JSON配置
-    bool parseJosnFile();
+    bool parseJsonFile();
     //添加数据库连接
     void produceConnection();
     //销毁数据库连接
