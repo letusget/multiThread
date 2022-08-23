@@ -1,3 +1,5 @@
+# 基于C++11的数据库连接池
+
 连接数据库需要配置数据量连接文件，也就是要使用 mysql.h
 当时安装mysql时，所有的安装文件，全部如下：
 ```sh
@@ -68,7 +70,11 @@ mysql-community-server-8.0.28-1.el7.x86_64 有缺少的需求 mysql-community-ic
 git push origin main:main
 ```
 
+## 运行
 
+``` cpp
+g++ *.cpp -o test -pthread -I /usr/include/mysql -L /www/server/mysql/lib /usr/local/lib/libjsoncpp.a -lmysqlclient
+```
 
 
 
