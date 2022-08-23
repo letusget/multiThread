@@ -64,7 +64,9 @@ mysql-community-server-8.0.28-1.el7.x86_64 有缺少的需求 mysql-community-ic
 
 还有mysql的动态库的路径：`/usr/lib64/mysql` 
 
-
+```sh
+git push origin main:main
+```
 
 
 
