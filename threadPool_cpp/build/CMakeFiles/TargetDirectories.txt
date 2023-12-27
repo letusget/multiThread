@@ -1,3 +1,0 @@
-/home/william/projects/multi_thread/multiThread/threadPool_cpp/build/CMakeFiles/ThreadPool_cpp.dir
-/home/william/projects/multi_thread/multiThread/threadPool_cpp/build/CMakeFiles/edit_cache.dir
-/home/william/projects/multi_thread/multiThread/threadPool_cpp/build/CMakeFiles/rebuild_cache.dir
