@@ -2,14 +2,7 @@
 #include "Task.h"
 #include "TaskQueue.cpp" //需要包含源文件，否则模板类 的函数就会 报错 “未定义的引用”
 #include "TaskQueue.h"
-#include <iostream>
-#include <string.h>
-#include <string>
-// #include <pthread.h>
-#include <thread>
-#include <unistd.h>
 
-using namespace std;
 
 template <typename T> ThreadPool<T>::ThreadPool(int min, int max) {
   //可以使用break 替代 return，在函数内部退出
@@ -17,7 +10,7 @@ template <typename T> ThreadPool<T>::ThreadPool(int min, int max) {
     //实例化任务队列
     taskQ = new TaskQueue<int>;
     if (taskQ == nullptr) {
-      cout << "malloc taskQ fail...\n";
+      std::cout << "malloc taskQ fail...\n";
       break;
     }
 
@@ -25,7 +18,7 @@ template <typename T> ThreadPool<T>::ThreadPool(int min, int max) {
     threadIDs = new pthread_t[max];
     if (threadIDs == nullptr) {
       //内存分配失败
-      cout << "malloc pthreadIDs fail...\n";
+      std::cout << "malloc pthreadIDs fail...\n";
       break;
     }
 
@@ -41,7 +34,7 @@ template <typename T> ThreadPool<T>::ThreadPool(int min, int max) {
     if (pthread_mutex_init(&mutexPool, NULL) != 0 ||
         pthread_cond_init(&notEmpty, NULL) != 0) {
       //初始化线程失败
-      cout << "mutex or condition init fail...\n";
+      std::cout << "mutex or condition init fail...\n";
 
       // return NULL;
       break;
@@ -120,7 +113,7 @@ template <typename T> void *ThreadPool<T>::worker(void *arg) {
     //线程使用完之后解锁
     pthread_mutex_unlock(&pool->mutexPool);
 
-    cout << "thread " << to_string(pthread_self()) << " start working...\n";
+    std::cout << "thread " << to_string(pthread_self()) << " start working...\n";
 
     //取出任务, 处理任务
     task.function(task.arg);
@@ -131,7 +124,7 @@ template <typename T> void *ThreadPool<T>::worker(void *arg) {
               //如果该内存大于4个字节，那么这里删除指针，就有可能会无法完全释放
     task.arg = nullptr; //那么这里为了方便释放内存，可以将其变为 类模板
 
-    cout << "thread " << pthread_self() << " end working...\n";
+    std::cout << "thread " << pthread_self() << " end working...\n";
 
     //任务处理结束后，需要将 忙线程数再减少
     pthread_mutex_lock(&pool->mutexPool); //线程会多访问 加锁
@@ -209,7 +202,7 @@ template <typename T> void ThreadPool<T>::threadExit() {
     if (threadIDs[i] == tid) {
       // tid这个线程需要退出, 将该线程的 ID修改为0
       threadIDs[i] = 0;
-      cout << "threadExit() called, " << to_string(tid) << " exiting...\n";
+      std::cout << "threadExit() called, " << to_string(tid) << " exiting...\n";
 
       break;
     }

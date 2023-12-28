@@ -2,9 +2,15 @@
 #define QTASKQUEUE_H
 
 #include "Task.h"
+#include <iostream>
+#include <mutex>
 #include <queue>
-// #include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string>
 #include <thread>
+#include <unistd.h>
 
 //任务队列
 template <typename T> class TaskQueue {
@@ -12,7 +18,8 @@ private:
   std::queue<Task<T>> m_taskQ;
 
   //使用 互斥锁，防止同时访问冲突
-  pthread_mutex_t m_mutex;
+  //   pthread_mutex_t m_mutex;
+  std::mutex m_mutex;
 
 public:
   TaskQueue();

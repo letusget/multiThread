@@ -2,27 +2,23 @@
 #include "TaskQueue.h"
 #include "threadPool.cpp" //由于模板类的声明和实现是分开的，所以需要包含源文件，否则就会报错“未定义的引用”
 #include "threadPool.h"
-#include <iostream>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 
-using namespace std;
 
 //工作函数
 void taskFunction(void *arg) {
   //需要对传入的地址进行类型转换，然后再解引用，得到该地址保存的数据
   int num = *(int *)arg;
   // printf("thread %ld is working, number = %d \n",pthread_self(),num);
-  cout << "thread " << pthread_self() << " is working, number= " << num << "\n";
-  sleep(1);
+  std::cout << "thread " << pthread_self() << " is working, number= " << num
+            << "\n";
+
+  std::chrono::milliseconds dura(1000);
+  std::this_thread::sleep_for(dura);
 }
 
 int main() {
-  cout << "threadpool 向你问好! "
-       << "\n";
+  std::cout << "threadpool 向你问好! "
+            << "\n";
 
   int minThread = 3;
   int maxThread = 10;
@@ -42,7 +38,8 @@ int main() {
   }
 
   //保证工作线程已经处理完毕
-  sleep(20);
+  std::chrono::milliseconds dura(10000);
+  std::this_thread::sleep_for(dura);
 
   return 0;
 }
