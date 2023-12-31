@@ -8,9 +8,9 @@ include_directories(include)
 
 # 手动列出所有源文件
 set(SOURCE_FILES
-    src/main.cpp
-    src/TaskQueue.cpp
-    src/threadPool.cpp
+    ./src/main.cpp
+    ./src/TaskQueue.cpp
+    ./src/threadPool.cpp
 )
 
 # 添加可执行文件
