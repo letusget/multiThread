@@ -76,40 +76,26 @@ void *ThreadPool<T>::worker(void *arg) {
 
     while (true) {
         //线程使用之前加锁
-        // pthread_mutex_lock(&pool->mutexPool);
-        (&pool->mutexPool)->lock();
+        //阻塞工作线程
+        // TODO 在头文件中使用
+        std::unique_lock<std::mutex> lock(pool->mutexPool);
 
         //判断当前任务队列
         while (pool->taskQ->taskNumber() == 0 && !pool->shutDown) {
-            //阻塞工作线程
-            // pthread_cond_wait(&pool->notEmpty, &pool->mutexPool);
-            std::unique_lock<std::mutex> lock(pool->mutexPool);
-            (&pool->notEmpty)->wait(lock, [pool] {
-                // 返回条件变量需要等待的条件。
-                // 例如，如果你的线程池中notEmpty是用来检查任务队列是否非空，
-                // 这里应该是检查任务队列是否不为空的表达式。
-                return !(&pool->condition);
-            });
+            (&pool->notEmpty)->wait(lock, [pool] { return pool->taskQ->taskNumber() > 0 || pool->shutDown; });
 
-            //销毁 阻塞的工作线程
-            if (pool->exitNum > 0) {
+            if (pool->exitNum > 0 && pool->liveNum > pool->minNum) {
                 pool->exitNum--;
-                if (pool->liveNum > pool->minNum) {
-                    //减少线程数
-                    pool->liveNum--;
-                    //解开互斥锁
-                    // pthread_mutex_unlock(&pool->mutexPool);
-                    (&pool->mutexPool)->unlock();
-
-                    //销毁线程
-                    pool->threadExit();
-                }
+                pool->liveNum--;
+                lock.unlock();
+                pool->threadExit();
             }
         }
 
         //判断线程池是否被关闭了
         if (pool->shutDown) {
             //先解锁, 避免死锁
+            lock.unlock();
             // pthread_mutex_unlock(&pool->mutexPool);
             //退出线程
             pool->threadExit();
@@ -121,7 +107,7 @@ void *ThreadPool<T>::worker(void *arg) {
         //解锁
         pool->busyNum++;
         //线程使用完之后解锁
-        // pthread_mutex_unlock(&pool->mutexPool);
+        lock.unlock();  // 释放锁，以便其他线程可以访问任务队列
 
         std::cout << "thread " << to_string(pthread_self()) << " start working...\n";
 
@@ -136,11 +122,9 @@ void *ThreadPool<T>::worker(void *arg) {
         std::cout << "thread " << pthread_self() << " end working...\n";
 
         //任务处理结束后，需要将 忙线程数再减少
-        // pthread_mutex_lock(&pool->mutexPool); //线程会多访问 加锁
-        (&pool->mutexPool)->lock();
+        //解锁
+        lock.lock();
         pool->busyNum--;
-        // pthread_mutex_unlock(&pool->mutexPool); //解锁
-        (&pool->mutexPool)->unlock();
     }
     return NULL;
 }
