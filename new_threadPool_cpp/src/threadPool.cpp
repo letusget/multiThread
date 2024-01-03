@@ -83,7 +83,7 @@ void *ThreadPool<T>::worker(void *arg) {
         }
 
         //判断线程池是否被关闭了
-        
+
         if (pool->shutDown) {
             //先解锁, 避免死锁
             lock.unlock();

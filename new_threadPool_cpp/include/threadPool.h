@@ -26,7 +26,7 @@ class ThreadPool {
     int exitNum;
 
     //防止线程访问冲突，需要加锁
-    std::mutex mutexPool;  //线程池的锁
+    std::mutex mutexPool;              //线程池的锁
     std::condition_variable notEmpty;  //判断是否空
 
     //每次增加的线程个数
