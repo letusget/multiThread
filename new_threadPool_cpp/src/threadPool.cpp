@@ -143,7 +143,6 @@ void *ThreadPool<T>::manager(void *arg) {
 
         //取出线程池中任务的数量和当前线程池的数量,
         //防止有其他线程在写入数据，所以需要 锁
-        // pthread_mutex_lock(&pool->mutexPool);
         (&pool->mutexPool)->lock();
         int queueSize = pool->taskQ->taskNumber();
         int liveNum   = pool->liveNum;
@@ -155,7 +154,6 @@ void *ThreadPool<T>::manager(void *arg) {
         //任务个数>存活的线程个数 并且 存活的线程个数<最大线程数
         //时，才会继续增加新线程
         if (queueSize > liveNum && liveNum < pool->maxNum) {
-            // pthread_mutex_lock(&pool->mutexPool);
             (&pool->mutexPool)->lock();
             int counter = 0;
             //不仅要在上面判断，也需要在 这里再次判断，防止在这期间数量发送变化，导致
@@ -169,7 +167,6 @@ void *ThreadPool<T>::manager(void *arg) {
                     pool->liveNum++;  //存活线程个数
                 }
             }
-            // pthread_mutex_unlock(&pool->mutexPool);
             (&pool->mutexPool)->unlock();
         }
 
@@ -177,11 +174,9 @@ void *ThreadPool<T>::manager(void *arg) {
         //销毁线程的条件：忙线程*2<存活线程 并且 存活的线程>最小线程数
         if (busyNum * 2 < liveNum && liveNum > pool->minNum) {
             //操作线程池中的值都要加锁
-            // pthread_mutex_lock(&pool->mutexPool);
             (&pool->mutexPool)->lock();
             //每次销毁后值保留两个线程
             pool->exitNum = NUMBER;
-            // pthread_mutex_unlock(&pool->mutexPool);
             (&pool->mutexPool)->unlock();
 
             //让线程自己结束
@@ -236,10 +231,8 @@ void ThreadPool<T>::addTask(Task<T> task) {
 template <typename T>
 int ThreadPool<T>::getBusyNum() {
     //这里有可能会被同时访问，所以需要加锁
-    // pthread_mutex_lock(&mutexPool);
     (&mutexPool)->lock();
     int busyNum = this->busyNum;
-    // pthread_mutex_unlock(&mutexPool);
     (&mutexPool)->unlock();
 
     return busyNum;
@@ -248,10 +241,8 @@ int ThreadPool<T>::getBusyNum() {
 //获取当前创建的线程个数
 template <typename T>
 int ThreadPool<T>::getAliveNum() {
-    // pthread_mutex_lock(&mutexPool);
     (&mutexPool)->lock();
     int aliveNum = this->liveNum;
-    // pthread_mutex_unlock(&mutexPool);
     (&mutexPool)->unlock();
 
     return aliveNum;
