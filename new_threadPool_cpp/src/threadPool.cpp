@@ -31,16 +31,6 @@ ThreadPool<T>::ThreadPool(int min, int max) {
         liveNum = min;
         exitNum = 0;
 
-        //初始化线程
-        // if (pthread_mutex_init(&mutexPool, NULL) != 0 ||
-        //     pthread_cond_init(&notEmpty, NULL) != 0) {
-        //   //初始化线程失败
-        //   std::cout << "mutex or condition init fail...\n";
-
-        //   // return NULL;
-        //   break;
-        // }
-
         //初始时不销毁
         shutDown = false;
 
@@ -110,7 +100,7 @@ void *ThreadPool<T>::worker(void *arg) {
         //线程使用完之后解锁
         lock.unlock();  // 释放锁，以便其他线程可以访问任务队列
 
-        std::cout << "thread " << to_string(pthread_self()) << " start working...\n";
+        std::cout << "thread " << std::to_string(pthread_self()) << " start working...\n";
 
         //取出任务, 处理任务
         task.function(task.arg);
@@ -151,8 +141,7 @@ void *ThreadPool<T>::manager(void *arg) {
         (&pool->mutexPool)->unlock();
 
         //添加线程
-        //任务个数>存活的线程个数 并且 存活的线程个数<最大线程数
-        //时，才会继续增加新线程
+        //任务个数>存活的线程个数 并且 存活的线程个数<最大线程数时，才会继续增加新线程
         if (queueSize > liveNum && liveNum < pool->maxNum) {
             (&pool->mutexPool)->lock();
             int counter = 0;
@@ -200,11 +189,13 @@ void ThreadPool<T>::threadExit() {
         if (threadIDs[i] == tid) {
             // tid这个线程需要退出, 将该线程的 ID修改为0
             threadIDs[i] = 0;
-            std::cout << "threadExit() called, " << to_string(tid) << " exiting...\n";
+            std::cout << "threadExit() called, " << std::to_string(tid) << " exiting...\n";
 
             break;
         }
     }
+
+    // TODO 释放线程资源
 
     //标准C函数
     pthread_exit(NULL);
@@ -214,7 +205,6 @@ void ThreadPool<T>::threadExit() {
 template <typename T>
 void ThreadPool<T>::addTask(Task<T> task) {
     //添加任务不再需要锁了，因为所有的操作都是由 TaskQueue来控制了，不会发生冲突
-
     if (shutDown) {
         return;
     }
@@ -223,8 +213,7 @@ void ThreadPool<T>::addTask(Task<T> task) {
     taskQ->addTask(task);
 
     //唤醒阻塞的线程
-    // pthread_cond_signal(&notEmpty); //唤醒消费者
-    notEmpty.notify_one();
+    notEmpty.notify_one();  //唤醒消费者
 }
 
 //当前线程池中线程个数
@@ -257,7 +246,6 @@ ThreadPool<T>::~ThreadPool() {
     pthread_join(managerID, NULL);
     //唤醒阻塞的消费者线程
     for (int i = 0; i < liveNum; i++) {
-        // pthread_cond_signal(&notEmpty);
         notEmpty.notify_one();
     }
 
@@ -268,8 +256,4 @@ ThreadPool<T>::~ThreadPool() {
     if (threadIDs) {
         delete[] threadIDs;
     }
-
-    //销毁互斥锁
-    // pthread_mutex_destroy(&mutexPool);
-    // pthread_cond_destroy(&notEmpty);
 }

@@ -2,7 +2,6 @@
 #define TASK_H
 
 //任务队列中的任务描述，包含一个函数和函数的参数
-using namespace std;
 
 using callBack = void (*)(void *arg);
 
